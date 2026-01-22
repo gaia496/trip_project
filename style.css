@@ -1,8 +1,6 @@
-/* ベーススタイル */
 :root {
     --primary-color: #0076a8; /* 北海道ブルー */
-    --accent-color: #e3f2fd;  /* 雪のような薄い青 */
-    --text-color: #333;
+    --accent-color: #e3f2fd;
     --bg-color: #f9f9f9;
 }
 
@@ -11,179 +9,125 @@ body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
+    color: #333;
+    padding-bottom: 80px; /* スマホでのスクロール余白 */
 }
 
 header {
     background: var(--primary-color);
     color: white;
-    text-align: center;
-    padding: 20px 10px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-h1 {
-    margin: 0;
-    font-size: 1.5rem;
+h1 { margin: 0; font-size: 1.1rem; }
+
+/* 編集ボタン */
+button { cursor: pointer; font-family: inherit; }
+.btn-edit {
+    background: white;
+    color: var(--primary-color);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s;
 }
 
-.sub-title {
-    margin: 5px 0 0;
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
-
-/* ナビゲーション（横スクロール対応） */
+/* ナビゲーション */
 .sticky-nav {
     position: sticky;
     top: 0;
     background: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     z-index: 100;
 }
-
 .nav-scroller {
     display: flex;
     overflow-x: auto;
-    white-space: nowrap;
     padding: 10px;
-    -webkit-overflow-scrolling: touch; /* iOSでのスクロールを滑らかに */
+    -webkit-overflow-scrolling: touch;
 }
-
-/* スクロールバーを隠す */
-.nav-scroller::-webkit-scrollbar {
-    display: none;
-}
+.nav-scroller::-webkit-scrollbar { display: none; } /* バーを隠す */
 
 .tab-btn {
-    background: none;
+    background: white;
     border: 1px solid #ddd;
     border-radius: 20px;
     padding: 8px 16px;
     margin-right: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
+    flex-shrink: 0;
     color: #666;
-    flex-shrink: 0; /* ボタンが潰れないように */
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
-
 .tab-btn.active {
     background: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
     font-weight: bold;
+    transform: scale(1.05);
 }
 
-/* メインコンテンツエリア */
-main {
-    padding: 20px;
-    max-width: 600px;
-    margin: 0 auto;
-}
+/* コンテンツエリア */
+main { padding: 20px; max-width: 600px; margin: 0 auto; }
+.day-section { display: none; animation: fadeIn 0.3s ease; }
+.day-section.active { display: block; }
 
-/* タブコンテンツの表示制御 */
-.tab-content {
-    display: none;
-    animation: fadeIn 0.5s;
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-.tab-content.active {
-    display: block;
+.day-title { 
+    border-bottom: 3px solid var(--accent-color); 
+    color: var(--primary-color); 
+    margin-bottom: 20px; 
+    padding-bottom: 5px;
 }
+.day-title h2 { margin: 0; font-size: 1.3rem; }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.day-header {
-    margin-bottom: 20px;
-    border-bottom: 2px solid var(--accent-color);
-    padding-bottom: 10px;
-}
-
-.day-header h2 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: var(--primary-color);
-}
-
-/* タイムラインスタイル */
-.timeline {
-    position: relative;
-    padding-left: 20px;
-    border-left: 3px solid var(--accent-color);
-}
-
-.event {
-    position: relative;
-    margin-bottom: 30px;
-}
-
-/* タイムラインの丸ポチ */
+/* タイムライン */
+.timeline { border-left: 3px solid var(--accent-color); padding-left: 20px; margin-left: 5px; }
+.event { position: relative; margin-bottom: 30px; }
 .event::before {
-    content: '';
-    position: absolute;
-    left: -28px; /* 線の位置に合わせて調整 */
-    top: 5px;
-    width: 14px;
-    height: 14px;
-    background: white;
-    border: 3px solid var(--primary-color);
-    border-radius: 50%;
+    content: ''; position: absolute; left: -29px; top: 6px;
+    width: 15px; height: 15px; background: white;
+    border: 3px solid var(--primary-color); border-radius: 50%;
 }
 
-.time {
-    font-weight: bold;
-    color: var(--primary-color);
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-}
+.time { font-weight: bold; color: var(--primary-color); display: block; margin-bottom: 4px; font-size: 0.9rem;}
 
 .detail {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background: white; padding: 15px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
+.event-title { margin: 0 0 5px; font-size: 1.1rem; font-weight: bold; }
+.event-desc { margin: 0; font-size: 0.95rem; color: #555; white-space: pre-wrap; line-height: 1.6; }
 
-.detail h3 {
-    margin: 0 0 5px;
-    font-size: 1.1rem;
-}
-
-.detail p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.detail a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.memo {
-    color: #d32f2f !important; /* 注意書きは赤系 */
-    font-size: 0.8rem !important;
-    margin-top: 5px !important;
-}
-
-/* 宿泊情報エリア */
-.hotel-info {
-    background: var(--accent-color);
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-    color: var(--primary-color);
-}
-
-.hotel-info h3 {
-    margin: 0 0 5px;
+/* 編集用フォーム */
+input.edit-input, textarea.edit-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
     font-size: 1rem;
+    box-sizing: border-box;
+    font-family: inherit;
 }
+textarea.edit-input { height: 80px; resize: vertical; }
 
-.hotel-info p {
-    margin: 0;
+.add-event-btn {
+    width: 100%;
+    padding: 12px;
+    background: #f0f0f0;
+    border: 2px dashed #ccc;
+    color: #666;
+    margin-top: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.2s;
 }
+.add-event-btn:active { background: #e0e0e0; }

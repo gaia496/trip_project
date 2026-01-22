@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北海道7日間周遊の旅</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>❄️ 北海道一周旅行 ❄️</h1>
+        <p class="sub-title">2026.02.XX - 2026.02.XX</p>
+    </header>
+
+    <nav class="sticky-nav">
+        <div class="nav-scroller">
+            <button class="tab-btn active" onclick="openDay(event, 'day1')">Day 1</button>
+            <button class="tab-btn" onclick="openDay(event, 'day2')">Day 2</button>
+            <button class="tab-btn" onclick="openDay(event, 'day3')">Day 3</button>
+            <button class="tab-btn" onclick="openDay(event, 'day4')">Day 4</button>
+            <button class="tab-btn" onclick="openDay(event, 'day5')">Day 5</button>
+            <button class="tab-btn" onclick="openDay(event, 'day6')">Day 6</button>
+            <button class="tab-btn" onclick="openDay(event, 'day7')">Day 7</button>
+        </div>
+    </nav>
+
+    <main>
+        <div id="day1" class="tab-content active">
+            <div class="day-header">
+                <h2>1日目：新千歳空港・函館</h2>
+                <p>移動距離が長いので注意！</p>
+            </div>
+            
+            <div class="timeline">
+                <div class="event">
+                    <div class="time">09:00</div>
+                    <div class="detail">
+                        <h3>✈️ 新千歳空港 到着</h3>
+                        <p>レンタカー手続き。雪道運転モードON。</p>
+                    </div>
+                </div>
+                <div class="event">
+                    <div class="time">12:30</div>
+                    <div class="detail">
+                        <h3>🍽 ランチ：苫小牧エリア</h3>
+                        <p>名物ホッキカレー or 海鮮丼</p>
+                    </div>
+                </div>
+                <div class="event">
+                    <div class="time">17:00</div>
+                    <div class="detail">
+                        <h3>🌃 函館山 ロープウェイ</h3>
+                        <p><a href="https://goo.gl/maps/example" target="_blank">📍 Google Map</a></p>
+                        <p class="memo">※日没16:50頃。防寒必須！</p>
+                    </div>
+                </div>
+                <div class="hotel-info">
+                    <h3>🏨 宿泊：ラビスタ函館ベイ</h3>
+                    <p>TEL: 0138-xx-xxxx</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="day2" class="tab-content">
+            <div class="day-header">
+                <h2>2日目：函館・登別</h2>
+                <p>朝市で海鮮丼を食べてから出発</p>
+            </div>
+            <div class="timeline">
+                <div class="event">
+                    <div class="time">07:00</div>
+                    <div class="detail">
+                        <h3>🦑 函館朝市</h3>
+                        <p>どんぶり横丁市場へ</p>
+                    </div>
+                </div>
+                <div class="event">
+                    <div class="time">14:00</div>
+                    <div class="detail">
+                        <h3>♨️ 登別地獄谷</h3>
+                        <p>遊歩道は滑るため注意</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="day3" class="tab-content">
+            <div class="day-header"><h2>3日目：札幌・小樽</h2><p>予定を入力してください...</p></div>
+        </div>
+        <div id="day4" class="tab-content">
+            <div class="day-header"><h2>4日目：旭川・美瑛</h2><p>予定を入力してください...</p></div>
+        </div>
+        <div id="day5" class="tab-content">
+            <div class="day-header"><h2>5日目：網走・知床</h2><p>予定を入力してください...</p></div>
+        </div>
+        <div id="day6" class="tab-content">
+            <div class="day-header"><h2>6日目：道東・釧路</h2><p>予定を入力してください...</p></div>
+        </div>
+        <div id="day7" class="tab-content">
+            <div class="day-header"><h2>7日目：帯広・千歳</h2><p>予定を入力してください...</p></div>
+        </div>
+
+    </main>
+
+    <script>
+        function openDay(evt, dayName) {
+            // 全てのコンテンツを隠す
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+
+            // 全てのボタンのactiveクラスを外す
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+
+            // 選択されたIDを表示し、ボタンをactiveにする
+            document.getElementById(dayName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+
+            // ページトップへスクロール（任意）
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    </script>
+</body>
+</html>

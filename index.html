@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>北海道7日間周遊（編集機能付き）</title>
+    <title>北海道7日間周遊（共有版）</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -12,7 +12,6 @@
     <header>
         <h1>❄️ 北海道旅のしおり ❄️</h1>
         <div class="header-controls">
-            <button onclick="resetData()" class="btn-reset">初期化</button>
             <button onclick="toggleEditMode()" id="editBtn" class="btn-edit">✏️ 編集モード</button>
         </div>
     </header>
@@ -23,8 +22,181 @@
     </nav>
 
     <main id="scheduleContainer">
-        </main>
+        <p style="text-align:center; margin-top:50px; color:#666;">データを読み込み中...</p>
+    </main>
 
-    <script src="script.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // ▼▼▼ あなたの設定情報を埋め込みました ▼▼▼
+        const firebaseConfig = {
+            apiKey: "AIzaSyD38ppWWbKL2TelivqqpxiUcYd9PRW1RPo",
+            authDomain: "hokkaido-trip-cacb9.firebaseapp.com",
+            databaseURL: "https://hokkaido-trip-cacb9-default-rtdb.firebaseio.com",
+            projectId: "hokkaido-trip-cacb9",
+            storageBucket: "hokkaido-trip-cacb9.firebasestorage.app",
+            messagingSenderId: "836754090370",
+            appId: "1:836754090370:web:a5e8ece492a1e13f0d879b"
+        };
+
+        // Firebase初期化
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- アプリケーションのデータとロジック ---
+
+        // 初期データ（データベースが空のときだけ使われます）
+        const defaultData = [
+            { day: 1, title: "新千歳・函館", events: [{ time: "09:00", title: "新千歳空港 着", desc: "レンタカー手続き" }, { time: "12:00", title: "ランチ", desc: "苫小牧でホッキカレー" }] },
+            { day: 2, title: "函館・登別", events: [{ time: "08:00", title: "函館朝市", desc: "イカ釣り体験" }] },
+            { day: 3, title: "札幌・小樽", events: [] },
+            { day: 4, title: "旭川・美瑛", events: [] },
+            { day: 5, title: "網走・流氷", events: [] },
+            { day: 6, title: "道東・釧路", events: [] },
+            { day: 7, title: "帯広・帰路", events: [] }
+        ];
+
+        let appData = [];
+        let isEditMode = false;
+        let currentActiveDay = 1;
+
+        // データベースの参照先
+        const dataRef = ref(db, 'trip/hokkaido');
+
+        // ★リアルタイム同期処理
+        onValue(dataRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // データがあればそれを使う
+                appData = data;
+            } else {
+                // データがなければ初期データを保存して使う
+                appData = defaultData;
+                set(dataRef, defaultData);
+            }
+            // 画面を更新
+            renderTabs();
+            renderSchedule();
+        });
+
+        // クラウドへ保存
+        window.saveToCloud = function() {
+            set(dataRef, appData)
+                .then(() => {
+                    console.log("Saved successfully!");
+                })
+                .catch((error) => {
+                    alert("保存に失敗しました: " + error);
+                });
+        };
+
+        // --- UI操作関数 (windowに紐付け) ---
+
+        window.switchDay = function(dayNum) {
+            currentActiveDay = dayNum;
+            renderTabs();
+            renderSchedule();
+        }
+
+        window.toggleEditMode = function() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('editBtn');
+            if (isEditMode) {
+                btn.innerText = "💾 保存して完了";
+                btn.style.background = "#e91e63";
+                btn.style.color = "white";
+            } else {
+                window.saveToCloud(); // 編集終了時に保存
+                btn.innerText = "✏️ 編集モード";
+                btn.style.background = "white";
+                btn.style.color = "#0076a8";
+            }
+            renderSchedule();
+        }
+
+        // 入力値の更新処理
+        window.updateDayTitle = (day, val) => {
+            appData.find(d => d.day === day).title = val;
+        };
+        window.updateEvent = (day, idx, field, val) => {
+            appData.find(d => d.day === day).events[idx][field] = val;
+        };
+        window.addEvent = (day) => {
+            appData.find(d => d.day === day).events.push({time:"10:00", title:"新規予定", desc:""});
+            renderSchedule(); // 即座に再描画
+        };
+        window.deleteEvent = (day, idx) => {
+            if(confirm("この予定を削除しますか？")) {
+                appData.find(d => d.day === day).events.splice(idx, 1);
+                renderSchedule();
+            }
+        };
+
+        // --- 描画関数 ---
+
+        function renderTabs() {
+            const container = document.getElementById('dayTabs');
+            container.innerHTML = '';
+            appData.forEach(dayData => {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${dayData.day === currentActiveDay ? 'active' : ''}`;
+                btn.innerText = `Day ${dayData.day}`;
+                btn.onclick = () => window.switchDay(dayData.day);
+                container.appendChild(btn);
+            });
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('scheduleContainer');
+            container.innerHTML = '';
+            appData.forEach(dayData => {
+                const section = document.createElement('div');
+                section.className = `day-section ${dayData.day === currentActiveDay ? 'active' : ''}`;
+                
+                // ヘッダー（編集時は入力欄）
+                let headerHTML = isEditMode ? 
+                    `<div class="day-title"><input type="text" class="edit-input" value="${dayData.title}" onchange="updateDayTitle(${dayData.day}, this.value)" style="font-weight:bold; font-size:1.2rem;"></div>` :
+                    `<div class="day-title"><h2>${dayData.day}日目：${dayData.title}</h2></div>`;
+
+                let eventsHTML = `<div class="timeline">`;
+                
+                dayData.events.forEach((evt, idx) => {
+                    if (isEditMode) {
+                        // 編集モード
+                        eventsHTML += `
+                        <div class="event">
+                            <div class="detail" style="border:1px solid #0076a8; background:#f0f8ff;">
+                                <div style="display:flex; gap:5px; margin-bottom:5px;">
+                                    <input type="time" class="edit-input" value="${evt.time}" onchange="updateEvent(${dayData.day}, ${idx}, 'time', this.value)" style="width:30%;">
+                                    <input type="text" class="edit-input" value="${evt.title}" onchange="updateEvent(${dayData.day}, ${idx}, 'title', this.value)" style="width:70%;">
+                                </div>
+                                <textarea class="edit-input" onchange="updateEvent(${dayData.day}, ${idx}, 'desc', this.value)" placeholder="メモ...">${evt.desc}</textarea>
+                                <button onclick="deleteEvent(${dayData.day}, ${idx})" style="color:red; background:none; border:none; margin-top:5px; cursor:pointer;">🗑 削除</button>
+                            </div>
+                        </div>`;
+                    } else {
+                        // 閲覧モード
+                        eventsHTML += `
+                        <div class="event">
+                            <span class="time">${evt.time}</span>
+                            <div class="detail">
+                                <h3 class="event-title">${evt.title}</h3>
+                                <p class="event-desc">${evt.desc}</p>
+                            </div>
+                        </div>`;
+                    }
+                });
+
+                if (isEditMode) {
+                    eventsHTML += `<button class="add-event-btn" onclick="addEvent(${dayData.day})">＋ 予定を追加</button>`;
+                }
+                
+                eventsHTML += `</div>`;
+                section.innerHTML = headerHTML + eventsHTML;
+                container.appendChild(section);
+            });
+        }
+    </script>
 </body>
 </html>
